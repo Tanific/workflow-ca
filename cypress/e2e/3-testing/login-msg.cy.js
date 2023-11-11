@@ -10,8 +10,15 @@ describe("Invalid login attempt", () => {
     cy.get("#loginForm").should("be.visible");
     cy.get("#loginEmail").type(invalidEmail);
     cy.get("#loginPassword").type(invalidPassword);
+    cy.on("window:alert", (str) => {
+      expect(str).to.equal(
+        "Either your username was not found or your password is incorrect",
+      );
+    });
     cy.get("button[type=submit]").contains("Login").click();
-    cy.get("#loginEmail:invalid").should("exist");
-    cy.get("#loginPassword:invalid").should("exist");
+    cy.url().should("not.include", "?view=profile&name=");
+    cy.get("#loginEmail")
+      .invoke("attr", "title")
+      .should("equal", "Only Noroff student or teacher emails are valid.");
   });
 });
